@@ -11,54 +11,90 @@ datasource db {
 }
 
 model Funcionario {
-  idFuncionario      Int      @id @default(autoincrement())
-  Nome               String
-  carteiraDeTrabalho Int      @unique
+  idFuncionario      Int        @id @default(autoincrement())
+  nome               String
+  carteiraDeTrabalho Int
   dataContratacao    DateTime
-
-  @@map("funcionarios")
+  salario            Float
+  Ingresso           Ingresso[]
 }
 
-model horario {
-  idHorario Int      @id @default(autoincrement())
-  horario   DateTime
-}
-
-model sala {
-  idSala     Int    @id @default(autoincrement())
-  nome       String
-  capacidade Int
-}
-
-model filme_exibido {
-  filme_idFilme     Int
-  sala_idsala       Int
-  horario_idhorario Int
-
-  @@id([filme_idFilme, horario_idhorario, sala_idsala])
-}
-
-model filme {
-  idfilme       Int      @id @default(autoincrement())
-  nomeBR        String
-  nomeEN        String
-  anoLAncamento DateTime
+model Filme {
+  idFilme       Int    @id @default(autoincrement())
+  NomeBR        String
+  NomeEN        String
+  anoLancamento Int
   sinopse       String
 
-  genero   genero @relation(fields: [idgenero], references: [idGenero])
-  idgenero Int
-  //!FK
+  genero   Genero   @relation(fields: [IDgenero], references: [idGenero])
+  IDgenero Int
+  Sessao   Sessao[]
 }
 
-model genero {
+model Genero {
   idGenero Int     @id @default(autoincrement())
-  nome     String
-  filme    filme[]
+  genero   String
+  Filme    Filme[]
 }
 
-model horario_trabalho_funcionario {
-  horario_idhorario         Int
-  funcionario_idfuncionario Int
+model Sala {
+  idSala     Int     @id @default(autoincrement())
+  nomeSala   String
+  capacidade Int
+  suporta3D  Boolean
 
-  @@id([funcionario_idfuncionario, horario_idhorario])
+  cinema   Cinema   @relation(fields: [IDcinema], references: [idCinema])
+  IDcinema Int
+  Sessao   Sessao[]
 }
+
+model Cinema {
+  idCinema       Int    @id @default(autoincrement())
+  nomeCinema     String
+  enderecoCinema String
+  contatoCinema  String
+  Sala           Sala[]
+}
+
+model Horario {
+  idHorario Int      @id @default(autoincrement())
+  horario   DateTime
+  Sessao    Sessao[]
+}
+
+model Ingresso {
+  idIngresso  Int      @id @default(autoincrement())
+  data        DateTime
+  valor       Float
+  poltrona    Int
+  sala_idSala Int
+
+  funcionario   Funcionario @relation(fields: [IDfuncionario], references: [idFuncionario])
+  IDfuncionario Int
+
+  sessao   Sessao @relation(fields: [IDsessao], references: [idSessao])
+  IDsessao Int
+}
+
+//   genero   genero @relation(fields: [idgenero], references: [idGenero])
+//   idgenero Int
+
+model Sessao {
+  idSessao  Int      @id @default(autoincrement())
+  inicio    DateTime
+  fim       DateTime
+  legendado String
+
+  sala   Sala @relation(fields: [IDsala], references: [idSala])
+  IDsala Int
+
+  filme   Filme @relation(fields: [IDfilme], references: [idFilme])
+  IDfilme Int
+
+  horario   Horario    @relation(fields: [IDhorario], references: [idHorario])
+  IDhorario Int
+ 
+  Ingresso  Ingresso[]
+}
+
+
