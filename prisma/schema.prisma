@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Funcionario {
+  idFuncionario      Int      @id @default(autoincrement())
+  Nome               String
+  carteiraDeTrabalho Int      @unique
+  dataContratacao    DateTime
+
+  @@map("funcionarios")
+}
+
+model horario {
+  idHorario Int      @id @default(autoincrement())
+  horario   DateTime
+}
+
+model sala {
+  idSala     Int    @id @default(autoincrement())
+  nome       String
+  capacidade Int
+}
+
+model filme_exibido {
+  filme_idFilme     Int
+  sala_idsala       Int
+  horario_idhorario Int
+
+  @@id([filme_idFilme, horario_idhorario, sala_idsala])
+}
+
+model filme {
+  idfilme       Int      @id @default(autoincrement())
+  nomeBR        String
+  nomeEN        String
+  anoLAncamento DateTime
+  sinopse       String
+
+  genero   genero @relation(fields: [idgenero], references: [idGenero])
+  idgenero Int
+  //!FK
+}
+
+model genero {
+  idGenero Int     @id @default(autoincrement())
+  nome     String
+  filme    filme[]
+}
+
+model horario_trabalho_funcionario {
+  horario_idhorario         Int
+  funcionario_idfuncionario Int
+
+  @@id([funcionario_idfuncionario, horario_idhorario])
+}
